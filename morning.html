@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#8ED1FC">
+  <link rel="shortcut icon" href="font/kirby_sleep.ico" type="image/x-icon">
+  <title>Good Morning</title>
+  <style>
+    @font-face {
+      font-family: 'Seurat Pro B';
+      src: url('font/FOT-Seurat\ Pro\ B.otf') format('opentype');
+      font-weight: normal;
+      font-style: normal;
+    }
+    
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+      font-family: 'Seurat Pro B', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      background-color: #8ED1FC; /* Light blue for morning */
+    }
+    
+    #background {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url('font/ipad_ls_morning.png'); /* Update with morning background */
+      background-size: cover;
+      background-position: center;
+      z-index: -1;
+    }
+    
+    .cloud {
+      position: absolute;
+      background-image: url('font/cloud.png'); /* Replace with cloud image */
+      background-size: contain;
+      background-repeat: no-repeat;
+      z-index: 0;
+      opacity: 0.9;
+    }
+    
+    #kirby-container {
+      position: fixed;
+      top: 25%; /* Moved up to make room for kanban */
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 1;
+    }
+    
+    #kirby-gif {
+      max-width: 150px;
+      max-height: 150px;
+    }
+    
+    #message-container {
+      position: fixed;
+      top: 100px;
+      left: 0;
+      width: 100%;
+      overflow: hidden;
+      height: 60px;
+      background-color: rgba(255, 183, 77, 0.8); /* Orange-yellow for morning */
+    }
+    
+    #message-container::before {
+      content: "";
+      position: absolute;
+      top: 3px;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background-image: 
+        radial-gradient(ellipse 7px 2px, #FFE4B5 50%, transparent 50%);
+      background-size: 12px 4px;
+      background-repeat: repeat-x;
+      opacity: 0.5;
+      pointer-events: none;
+    }
+    
+    #message-container::after {
+      content: "";
+      position: absolute;
+      bottom: 3px;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background-image: 
+        radial-gradient(ellipse 7px 2px, #FFE4B5 50%, transparent 50%);
+      background-size: 12px 4px;
+      background-repeat: repeat-x;
+      opacity: 0.5;
+      pointer-events: none;
+    }
+    
+    #message {
+      position: absolute;
+      color: white;
+      font-size: 16px;
+      font-weight: normal;
+      white-space: nowrap;
+      animation: scrollText 12s linear infinite;
+      padding: 15px 0;
+      letter-spacing: 1px;
+    }
+    
+    /* Kanban styles */
+    #kanban-container {
+      position: fixed;
+      top: 35%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 90%;
+      max-width: 800px;
+      height: 60%;
+      background-color: rgba(255, 255, 255, 0.9);
+      border-radius: 15px;
+      overflow: auto;
+      z-index: 1;
+      box-shadow: 0 5px 25px rgba(0, 0, 0, 0.1);
+      padding: 15px;
+    }
+    
+    .kanban-board {
+      display: flex;
+      height: 100%;
+      gap: 15px;
+      min-height: 100%;
+    }
+    
+    .kanban-column {
+      flex: 1;
+      min-width: 200px;
+      background-color: rgba(245, 245, 245, 0.8);
+      border-radius: 8px;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .kanban-column-header {
+      font-size: 16px;
+      font-weight: bold;
+      margin-bottom: 10px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid rgba(0, 0, 0, 0.1);
+      color: #555;
+    }
+    
+    .kanban-cards {
+      flex: 1;
+      overflow-y: auto;
+    }
+    
+    .kanban-card {
+      background-color: white;
+      border-radius: 6px;
+      padding: 10px;
+      margin-bottom: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      border-left: 3px solid #8ED1FC;
+      font-size: 14px;
+    }
+    
+    .kanban-card.high-priority {
+      border-left: 3px solid #FF5252;
+    }
+    
+    .kanban-card.medium-priority {
+      border-left: 3px solid #FFB74D;
+    }
+    
+    .kanban-card.low-priority {
+      border-left: 3px solid #4FC3F7;
+    }
+    
+    .task-checkbox {
+      margin-right: 5px;
+    }
+    
+    .task-completed {
+      text-decoration: line-through;
+      opacity: 0.7;
+    }
+    
+    .date-container {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background-color: rgba(255, 255, 255, 0.7);
+      padding: 10px 15px;
+      border-radius: 20px;
+      font-size: 14px;
+      color: #333;
+      z-index: 2;
+    }
+    
+    @keyframes scrollText {
+      from { left: 100%; }
+      to { left: -100%; }
+    }
+    
+    @keyframes float {
+      0% { transform: translateY(0px); }
+      50% { transform: translateY(-15px); }
+      100% { transform: translateY(0px); }
+    }
+  </style>
+</head>
+<body>
+  <div id="background"></div>
+  <div id="clouds-container"></div>
+  
+  <div class="date-container" id="date-display"></div>
+  
+  <div id="kirby-container">
+    <img id="kirby-gif" src="font/kirby.gif" alt="Kirby">
+  </div>
+  
+  <div id="message-container">
+    <div id="message">Good morning! Rise and shine! Today is going to be a great day.</div>
+  </div>
+  
+  <div id="kanban-container">
+    <div class="kanban-board" id="kanban-board">
+      <!-- Kanban columns will be populated here -->
+    </div>
+  </div>
+  
+  <audio id="background-audio" preload="auto" autoplay muted>
+    <source src="font/goodmorning.mp3" type="audio/mp3">
+    Your browser does not support the audio element.
+  </audio>
+  
+  <script>
+    // Your Kanban data directly embedded
+    const kanbanData = {
+      "columns": [
+        {
+          "id": "urgent",
+          "title": "Urgent",
+          "cards": [
+            {
+              "id": "1742672332977-550",
+              "content": "[x] finish setting up 03/14 culto",
+              "priority": "normal"
+            }
+          ]
+        },
+        {
+          "id": "by-end-of-the-week",
+          "title": "By end of the week",
+          "cards": [
+            {
+              "id": "1742672332977-126",
+              "content": "[ ] complete training for work",
+              "priority": "normal"
+            },
+            {
+              "id": "1742672332977-487",
+              "content": "[x] finish Essay 1 revision",
+              "priority": "normal"
+            },
+            {
+              "id": "1742672332977-806",
+              "content": "[x] compete MUS132 take home exam",
+              "priority": "normal"
+            },
+            {
+              "id": "1742672332977-345",
+              "content": "[ ] change sideview mirror and send in insurance claim",
+              "priority": "normal"
+            }
+          ]
+        },
+        {
+          "id": "by-end-of-the-month",
+          "title": "By end of the month",
+          "cards": [
+            {
+              "id": "1742672332977-212",
+              "content": "[ ] drop off by courthouse for reducing ticket fee",
+              "priority": "normal"
+            }
+          ]
+        },
+        {
+          "id": "[[00-this-week/new-note]]",
+          "title": "[[00-This Week/New Note]]",
+          "cards": []
+        },
+        {
+          "id": "archive",
+          "title": "Archive",
+          "cards": [
+            {
+              "id": "1742672332977-433",
+              "content": "[x] Good to-do list",
+              "priority": "normal"
+            },
+            {
+              "id": "1742672332977-528",
+              "content": "[x] Prompt for new file",
+              "priority": "normal"
+            },
+            {
+              "id": "1742672332977-559",
+              "content": "[x] study PG sermon",
+              "priority": "normal"
+            }
+          ]
+        }
+      ]
+    };
+    
+    function createClouds() {
+      const cloudsContainer = document.getElementById('clouds-container');
+      const numClouds = 6; // Adjust number of clouds
+      
+      for (let i = 0; i < numClouds; i++) {
+        const cloud = document.createElement('div');
+        cloud.className = 'cloud';
+        
+        // Random size between 50px and 150px
+        const size = Math.floor(Math.random() * 100) + 50;
+        cloud.style.width = `${size}px`;
+        cloud.style.height = `${size / 2}px`;
+        
+        // Random position
+        const left = Math.floor(Math.random() * 100);
+        const top = Math.floor(Math.random() * 50); // Keep clouds in upper half
+        cloud.style.left = `${left}%`;
+        cloud.style.top = `${top}%`;
+        
+        // Random floating animation
+        const duration = Math.floor(Math.random() * 10) + 15; // 15-25 seconds
+        const delay = Math.floor(Math.random() * 5); // 0-5 seconds delay
+        cloud.style.animation = `float ${duration}s ease-in-out ${delay}s infinite`;
+        
+        cloudsContainer.appendChild(cloud);
+      }
+    }
+    
+    function getMessageFromURL() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const message = urlParams.get('message');
+      
+      if (message) {
+        document.getElementById('message').textContent = message;
+      }
+    }
+    
+    function updateDate() {
+      const dateDisplay = document.getElementById('date-display');
+      const now = new Date();
+      const options = { weekday: 'long', month: 'long', day: 'numeric' };
+      dateDisplay.textContent = now.toLocaleDateString('en-US', options);
+    }
+    
+    function forceAudioPlay() {
+      const audio = document.getElementById('background-audio');
+      
+      setTimeout(() => {
+        audio.muted = false;
+        audio.volume = 0.7;
+        
+        if (audio.paused) {
+          audio.play().catch(error => {
+            // Silent catch - user interaction may be needed
+          });
+        }
+      }, 100);
+      
+      document.addEventListener('click', function() {
+        if (audio.paused) {
+          audio.muted = false;
+          audio.volume = 0.7;
+          audio.play();
+        }
+      }, { once: true });
+    }
+    
+    function renderKanban() {
+      const kanbanBoard = document.getElementById('kanban-board');
+      kanbanBoard.innerHTML = '';
+      
+      // Filter out empty or special columns
+      const columnsToRender = kanbanData.columns.filter(column => 
+        column.cards.length > 0 && !column.id.includes('[[')
+      );
+      
+      columnsToRender.forEach(column => {
+        const columnElement = document.createElement('div');
+        columnElement.className = 'kanban-column';
+        
+        const headerElement = document.createElement('div');
+        headerElement.className = 'kanban-column-header';
+        headerElement.textContent = column.title;
+        
+        const cardsContainer = document.createElement('div');
+        cardsContainer.className = 'kanban-cards';
+        
+        column.cards.forEach(card => {
+          const cardElement = document.createElement('div');
+          cardElement.className = `kanban-card ${card.priority !== 'normal' ? card.priority + '-priority' : ''}`;
+          
+          // Process the task content to handle checkboxes
+          let content = card.content;
+          let isCompleted = false;
+          
+          // Check if it's a task with a checkbox
+          if (content.startsWith('[x]') || content.startsWith('[X]')) {
+            isCompleted = true;
+            content = content.substring(3).trim();
+            
+            // Add completed class to the card element
+            cardElement.classList.add('task-completed');
+            
+            // Create the content with checkbox
+            cardElement.innerHTML = '<span class="task-checkbox">☑️</span> <span style="text-decoration: line-through; opacity: 0.7;">' + content + '</span>';
+          } else if (content.startsWith('[ ]')) {
+            isCompleted = false;
+            content = content.substring(3).trim();
+            
+            // Create the content with checkbox
+            cardElement.innerHTML = '<span class="task-checkbox">☐</span> <span>' + content + '</span>';
+          } else {
+            // Regular content without checkbox
+            cardElement.textContent = content;
+          }
+          
+          cardsContainer.appendChild(cardElement);
+        });
+        
+        columnElement.appendChild(headerElement);
+        columnElement.appendChild(cardsContainer);
+        kanbanBoard.appendChild(columnElement);
+      });
+    }
+    
+    window.onload = function() {
+      updateDate();
+      createClouds();
+      getMessageFromURL();
+      forceAudioPlay();
+      renderKanban();
+    };
+  </script>
+</body>
+</html>

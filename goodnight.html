@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#384162">
+  <link rel="shortcut icon" href="font/kirby_sleep.ico" type="image/x-icon">
+  <title>Sleep Reminder</title>
+  <style>
+    @font-face {
+      font-family: 'Seurat Pro B';
+      src: url('font/FOT-Seurat\ Pro\ B.otf') format('opentype');
+      font-weight: normal;
+      font-style: normal;
+    }
+    
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+      font-family: 'Seurat Pro B', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      background-color: #384162;
+    }
+    
+    #background {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url('font/ipad_ls_night.png');
+      background-size: cover;
+      background-position: center;
+      z-index: -1;
+    }
+    
+    .star {
+      position: absolute;
+      background-image: url('font/star.png');
+      background-size: contain;
+      background-repeat: no-repeat;
+      z-index: 0;
+      opacity: 0.8;
+    }
+    
+    #kirby-container {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 1;
+    }
+    
+    #kirby-gif {
+      max-width: 150px;
+      max-height: 150px;
+    }
+    
+    #message-container {
+      position: fixed;
+      top: 100px;
+      left: 0;
+      width: 100%;
+      overflow: hidden;
+      height: 60px;
+      background-color: rgba(44, 189, 142, 0.8);
+    }
+    
+    #message-container::before {
+      content: "";
+      position: absolute;
+      top: 3px;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background-image: 
+        radial-gradient(ellipse 7px 2px, #97f2b9 50%, transparent 50%);
+      background-size: 12px 4px;
+      background-repeat: repeat-x;
+      opacity: 0.5;
+      pointer-events: none;
+    }
+    
+    #message-container::after {
+      content: "";
+      position: absolute;
+      bottom: 3px;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background-image: 
+        radial-gradient(ellipse 7px 2px, #97f2b9 50%, transparent 50%);
+      background-size: 12px 4px;
+      background-repeat: repeat-x;
+      opacity: 0.5;
+      pointer-events: none;
+    }
+    
+    #message {
+      position: absolute;
+      color: white;
+      font-size: 16px;
+      font-weight: normal;
+      white-space: nowrap;
+      animation: scrollText 12s linear infinite;
+      padding: 15px 0;
+      letter-spacing: 1px;
+    }
+    
+    @keyframes scrollText {
+      from { left: 100%; }
+      to { left: -100%; }
+    }
+    
+    @keyframes twinkle {
+      0% { opacity: 0.4; }
+      50% { opacity: 1; }
+      100% { opacity: 0.4; }
+    }
+  </style>
+</head>
+<body>
+  <div id="background"></div>
+  <div id="stars-container"></div>
+  
+  <div id="kirby-container">
+    <img id="kirby-gif" src="font/kirby.gif" alt="Kirby">
+  </div>
+  
+  <div id="message-container">
+    <div id="message">Good night! Dorme com Deus!</div>
+  </div>
+  
+  <audio id="background-audio" preload="auto" autoplay muted>
+    <source src="font/goodnight.mp3" type="audio/mp3">
+    Your browser does not support the audio element.
+  </audio>
+  
+  <script>
+    function createStars() {
+      const starsContainer = document.getElementById('stars-container');
+      const numStars = 50; // Adjust number of stars
+      
+      for (let i = 0; i < numStars; i++) {
+        const star = document.createElement('div');
+        star.className = 'star';
+        
+        // Random size between 10px and 30px
+        const size = Math.floor(Math.random() * 20) + 10;
+        star.style.width = `${size}px`;
+        star.style.height = `${size}px`;
+        
+        // Random position
+        const left = Math.floor(Math.random() * 100);
+        const top = Math.floor(Math.random() * 100);
+        star.style.left = `${left}%`;
+        star.style.top = `${top}%`;
+        
+        // Random rotation
+        const rotation = Math.floor(Math.random() * 360);
+        star.style.transform = `rotate(${rotation}deg)`;
+        
+        // Random twinkle animation
+        const duration = Math.floor(Math.random() * 4) + 2; // 2-6 seconds
+        const delay = Math.floor(Math.random() * 5); // 0-5 seconds delay
+        star.style.animation = `twinkle ${duration}s ease-in-out ${delay}s infinite`;
+        
+        starsContainer.appendChild(star);
+      }
+    }
+    
+    function getMessageFromURL() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const message = urlParams.get('message');
+      
+      if (message) {
+        document.getElementById('message').textContent = message;
+      }
+    }
+    
+    function forceAudioPlay() {
+      const audio = document.getElementById('background-audio');
+      
+      setTimeout(() => {
+        audio.muted = false;
+        audio.volume = 0.7;
+        
+        if (audio.paused) {
+          audio.play().catch(error => {
+          });
+        }
+      }, 100);
+      
+      document.addEventListener('click', function() {
+        if (audio.paused) {
+          audio.muted = false;
+          audio.volume = 0.7;
+          audio.play();
+        }
+      }, { once: true });
+      
+      document.addEventListener('scroll', function() {
+        if (audio.paused) {
+          audio.muted = false;
+          audio.volume = 0.7;
+          audio.play();
+        }
+      }, { once: true });
+      
+      document.addEventListener('keypress', function() {
+        if (audio.paused) {
+          audio.muted = false;
+          audio.volume = 0.7;
+          audio.play();
+        }
+      }, { once: true });
+    }
+    
+    window.onload = function() {
+      createStars();
+      getMessageFromURL();
+      forceAudioPlay();
+    };
+  </script>
+</body>
+</html>

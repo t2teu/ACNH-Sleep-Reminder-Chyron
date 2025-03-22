@@ -1,0 +1,78 @@
+{
+  "columns": [
+    {
+      "id": "urgent",
+      "title": "Urgent",
+      "cards": [
+        {
+          "id": "1742672632037-538",
+          "content": "[x] finish setting up 03/14 culto",
+          "priority": "normal"
+        }
+      ]
+    },
+    {
+      "id": "by-end-of-the-week",
+      "title": "By end of the week",
+      "cards": [
+        {
+          "id": "1742672632037-121",
+          "content": "[ ] complete training for work",
+          "priority": "normal"
+        },
+        {
+          "id": "1742672632037-522",
+          "content": "[x] finish Essay 1 revision",
+          "priority": "normal"
+        },
+        {
+          "id": "1742672632037-671",
+          "content": "[x] compete MUS132 take home exam",
+          "priority": "normal"
+        },
+        {
+          "id": "1742672632037-806",
+          "content": "[ ] change sideview mirror and send in insurance claim",
+          "priority": "normal"
+        }
+      ]
+    },
+    {
+      "id": "by-end-of-the-month",
+      "title": "By end of the month",
+      "cards": [
+        {
+          "id": "1742672632037-109",
+          "content": "[ ] drop off by courthouse for reducing ticket fee",
+          "priority": "normal"
+        }
+      ]
+    },
+    {
+      "id": "[[00-this-week/new-note]]",
+      "title": "[[00-This Week/New Note]]",
+      "cards": []
+    },
+    {
+      "id": "archive",
+      "title": "Archive",
+      "cards": [
+        {
+          "id": "1742672632037-854",
+          "content": "[x] Good to-do list",
+          "priority": "normal"
+        },
+        {
+          "id": "1742672632037-595",
+          "content": "[x] Prompt for new file",
+          "priority": "normal"
+        },
+        {
+          "id": "1742672632037-4",
+          "content": "[x] study PG sermon",
+          "priority": "normal"
+        }
+      ]
+    }
+  ]
+}
