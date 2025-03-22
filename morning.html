@@ -215,6 +215,31 @@
       z-index: 2;
     }
     
+    .loading {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+      width: 100%;
+      background-color: rgba(255, 255, 255, 0.7);
+      border-radius: 8px;
+    }
+    
+    .loading-spinner {
+      border: 4px solid rgba(0, 0, 0, 0.1);
+      border-radius: 50%;
+      border-top: 4px solid #3498db;
+      width: 30px;
+      height: 30px;
+      animation: spin 1s linear infinite;
+      margin-right: 10px;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
     @keyframes scrollText {
       from { left: 100%; }
       to { left: -100%; }
@@ -243,7 +268,10 @@
   
   <div id="kanban-container">
     <div class="kanban-board" id="kanban-board">
-      <!-- Kanban columns will be populated here -->
+      <div class="loading">
+        <div class="loading-spinner"></div>
+        <p>Loading your tasks...</p>
+      </div>
     </div>
   </div>
   
@@ -253,85 +281,8 @@
   </audio>
   
   <script>
-    // Your Kanban data directly embedded
-    const kanbanData = {
-      "columns": [
-        {
-          "id": "urgent",
-          "title": "Urgent",
-          "cards": [
-            {
-              "id": "1742672332977-550",
-              "content": "[x] finish setting up 03/14 culto",
-              "priority": "normal"
-            }
-          ]
-        },
-        {
-          "id": "by-end-of-the-week",
-          "title": "By end of the week",
-          "cards": [
-            {
-              "id": "1742672332977-126",
-              "content": "[ ] complete training for work",
-              "priority": "normal"
-            },
-            {
-              "id": "1742672332977-487",
-              "content": "[x] finish Essay 1 revision",
-              "priority": "normal"
-            },
-            {
-              "id": "1742672332977-806",
-              "content": "[x] compete MUS132 take home exam",
-              "priority": "normal"
-            },
-            {
-              "id": "1742672332977-345",
-              "content": "[ ] change sideview mirror and send in insurance claim",
-              "priority": "normal"
-            }
-          ]
-        },
-        {
-          "id": "by-end-of-the-month",
-          "title": "By end of the month",
-          "cards": [
-            {
-              "id": "1742672332977-212",
-              "content": "[ ] drop off by courthouse for reducing ticket fee",
-              "priority": "normal"
-            }
-          ]
-        },
-        {
-          "id": "[[00-this-week/new-note]]",
-          "title": "[[00-This Week/New Note]]",
-          "cards": []
-        },
-        {
-          "id": "archive",
-          "title": "Archive",
-          "cards": [
-            {
-              "id": "1742672332977-433",
-              "content": "[x] Good to-do list",
-              "priority": "normal"
-            },
-            {
-              "id": "1742672332977-528",
-              "content": "[x] Prompt for new file",
-              "priority": "normal"
-            },
-            {
-              "id": "1742672332977-559",
-              "content": "[x] study PG sermon",
-              "priority": "normal"
-            }
-          ]
-        }
-      ]
-    };
+    // Define kanbanData variable to store the loaded data
+    let kanbanData = null;
     
     function createClouds() {
       const cloudsContainer = document.getElementById('clouds-container');
@@ -400,12 +351,18 @@
       }, { once: true });
     }
     
-    function renderKanban() {
+    function renderKanban(data) {
+      if (!data || !data.columns) {
+        const kanbanBoard = document.getElementById('kanban-board');
+        kanbanBoard.innerHTML = '<div style="background-color: rgba(255,255,255,0.9); padding: 15px; border-radius: 8px; text-align: center; width: 100%;"><p>Could not load your tasks. Invalid data format.</p></div>';
+        return;
+      }
+      
       const kanbanBoard = document.getElementById('kanban-board');
       kanbanBoard.innerHTML = '';
       
       // Filter out empty columns, special columns, and the Archive column
-      const columnsToRender = kanbanData.columns.filter(column => 
+      const columnsToRender = data.columns.filter(column => 
         column.cards.length > 0 && 
         !column.id.includes('[[') && 
         column.id !== 'archive'
@@ -460,12 +417,56 @@
       });
     }
     
+    // Function to fetch Kanban data using a CORS proxy
+    async function fetchKanbanData() {
+      try {
+        // Using a CORS proxy to access the Google Drive file
+        const corsProxy = 'https://corsproxy.io/?';
+        const driveURL = 'https://drive.google.com/uc?export=download&id=12uZociZJ57fZR6MlglJMmgZNjD1Kvs95';
+        const response = await fetch(corsProxy + encodeURIComponent(driveURL));
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch Kanban data');
+        }
+        
+        const data = await response.json();
+        console.log('Successfully fetched data');
+        kanbanData = data; // Store the fetched data
+        renderKanban(data);
+      } catch (error) {
+        console.error('Error fetching Kanban data:', error);
+        
+        // Try alternative CORS proxy if the first one fails
+        try {
+          console.log('Trying alternative CORS proxy...');
+          const alt_corsProxy = 'https://api.allorigins.win/raw?url=';
+          const driveURL = 'https://drive.google.com/uc?export=download&id=12uZociZJ57fZR6MlglJMmgZNjD1Kvs95';
+          const alt_response = await fetch(alt_corsProxy + encodeURIComponent(driveURL));
+          
+          if (!alt_response.ok) {
+            throw new Error('Failed to fetch with alternative proxy');
+          }
+          
+          const alt_data = await alt_response.json();
+          console.log('Successfully fetched data with alternative proxy');
+          kanbanData = alt_data;
+          renderKanban(alt_data);
+        } catch (alt_error) {
+          console.error('All proxy attempts failed:', alt_error);
+          
+          // Display error message
+          const kanbanBoard = document.getElementById('kanban-board');
+          kanbanBoard.innerHTML = '<div style="background-color: rgba(255,255,255,0.9); padding: 15px; border-radius: 8px; text-align: center; width: 100%;"><p>Could not load your tasks. Please check your connection.</p><p>Try opening this page as a bookmark instead of from Shortcuts.</p></div>';
+        }
+      }
+    }
+    
     window.onload = function() {
       updateDate();
       createClouds();
       getMessageFromURL();
       forceAudioPlay();
-      renderKanban();
+      fetchKanbanData(); // Now using CORS proxy
     };
   </script>
 </body>
