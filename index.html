@@ -37,6 +37,15 @@
       z-index: -1;
     }
     
+    .star {
+      position: absolute;
+      background-image: url('font/star.png');
+      background-size: contain;
+      background-repeat: no-repeat;
+      z-index: 0;
+      opacity: 0.8;
+    }
+    
     #kirby-container {
       position: fixed;
       top: 50%;
@@ -105,10 +114,17 @@
       from { left: 100%; }
       to { left: -100%; }
     }
+    
+    @keyframes twinkle {
+      0% { opacity: 0.4; }
+      50% { opacity: 1; }
+      100% { opacity: 0.4; }
+    }
   </style>
 </head>
 <body>
   <div id="background"></div>
+  <div id="stars-container"></div>
   
   <div id="kirby-container">
     <img id="kirby-gif" src="font/kirby.gif" alt="Kirby">
@@ -124,6 +140,38 @@
   </audio>
   
   <script>
+    function createStars() {
+      const starsContainer = document.getElementById('stars-container');
+      const numStars = 30; // Adjust number of stars
+      
+      for (let i = 0; i < numStars; i++) {
+        const star = document.createElement('div');
+        star.className = 'star';
+        
+        // Random size between 10px and 30px
+        const size = Math.floor(Math.random() * 20) + 10;
+        star.style.width = `${size}px`;
+        star.style.height = `${size}px`;
+        
+        // Random position
+        const left = Math.floor(Math.random() * 100);
+        const top = Math.floor(Math.random() * 100);
+        star.style.left = `${left}%`;
+        star.style.top = `${top}%`;
+        
+        // Random rotation
+        const rotation = Math.floor(Math.random() * 360);
+        star.style.transform = `rotate(${rotation}deg)`;
+        
+        // Random twinkle animation
+        const duration = Math.floor(Math.random() * 4) + 2; // 2-6 seconds
+        const delay = Math.floor(Math.random() * 5); // 0-5 seconds delay
+        star.style.animation = `twinkle ${duration}s ease-in-out ${delay}s infinite`;
+        
+        starsContainer.appendChild(star);
+      }
+    }
+    
     function getMessageFromURL() {
       const urlParams = new URLSearchParams(window.location.search);
       const message = urlParams.get('message');
@@ -172,6 +220,7 @@
     }
     
     window.onload = function() {
+      createStars();
       getMessageFromURL();
       forceAudioPlay();
     };
