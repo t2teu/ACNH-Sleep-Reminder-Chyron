@@ -49,15 +49,15 @@
     
     #kirby-container {
       position: fixed;
-      top: 25%; /* Moved up to make room for kanban */
+      top: 22%; /* Moved up even more to make room for kanban */
       left: 50%;
       transform: translate(-50%, -50%);
       z-index: 1;
     }
     
     #kirby-gif {
-      max-width: 150px;
-      max-height: 150px;
+      max-width: 120px;
+      max-height: 120px;
     }
     
     #message-container {
@@ -117,56 +117,69 @@
       top: 35%;
       left: 50%;
       transform: translateX(-50%);
-      width: 90%;
+      width: 92%;
       max-width: 800px;
       height: 60%;
       background-color: rgba(255, 255, 255, 0.9);
       border-radius: 15px;
-      overflow: auto;
+      overflow: hidden; /* Prevent scrolling */
       z-index: 1;
       box-shadow: 0 5px 25px rgba(0, 0, 0, 0.1);
-      padding: 15px;
+      padding: 10px;
     }
     
     .kanban-board {
       display: flex;
+      flex-direction: column; /* Stack columns vertically for mobile */
       height: 100%;
-      gap: 15px;
-      min-height: 100%;
+      gap: 8px;
+      overflow-y: auto; /* Allow scrolling only if absolutely necessary */
+      padding-right: 5px;
     }
     
     .kanban-column {
-      flex: 1;
-      min-width: 200px;
       background-color: rgba(245, 245, 245, 0.8);
       border-radius: 8px;
-      padding: 10px;
+      padding: 8px;
       display: flex;
       flex-direction: column;
     }
     
+    /* Media query for larger screens */
+    @media (min-width: 768px) {
+      .kanban-board {
+        flex-direction: row; /* Horizontal layout on larger screens */
+      }
+      
+      .kanban-column {
+        flex: 1;
+        min-width: 200px;
+      }
+    }
+    
     .kanban-column-header {
-      font-size: 16px;
+      font-size: 14px;
       font-weight: bold;
-      margin-bottom: 10px;
-      padding-bottom: 8px;
+      margin-bottom: 6px;
+      padding-bottom: 4px;
       border-bottom: 2px solid rgba(0, 0, 0, 0.1);
       color: #555;
     }
     
     .kanban-cards {
-      flex: 1;
-      overflow-y: auto;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
     }
     
     .kanban-card {
       background-color: white;
       border-radius: 6px;
-      padding: 10px;
-      margin-bottom: 8px;
+      padding: 8px;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
       border-left: 3px solid #8ED1FC;
-      font-size: 14px;
+      font-size: 12px;
+      width: 100%;
     }
     
     .kanban-card.high-priority {
@@ -391,9 +404,11 @@
       const kanbanBoard = document.getElementById('kanban-board');
       kanbanBoard.innerHTML = '';
       
-      // Filter out empty or special columns
+      // Filter out empty columns, special columns, and the Archive column
       const columnsToRender = kanbanData.columns.filter(column => 
-        column.cards.length > 0 && !column.id.includes('[[')
+        column.cards.length > 0 && 
+        !column.id.includes('[[') && 
+        column.id !== 'archive'
       );
       
       columnsToRender.forEach(column => {
