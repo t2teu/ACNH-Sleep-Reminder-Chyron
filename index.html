@@ -22,6 +22,7 @@
       width: 100%;
       overflow: hidden;
       font-family: 'Seurat Pro B', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      background-color: #384162;
     }
     
     #background {
@@ -30,11 +31,23 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background-color: #384162;
       background-image: url('font/ipad_ls_night.png');
       background-size: cover;
       background-position: center;
       z-index: -1;
+    }
+    
+    #kirby-container {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 1;
+    }
+    
+    #kirby-gif {
+      max-width: 150px;
+      max-height: 150px;
     }
     
     #message-container {
@@ -83,7 +96,7 @@
       font-size: 16px;
       font-weight: normal;
       white-space: nowrap;
-      animation: scrollText 15s linear infinite;
+      animation: scrollText 25s linear infinite;
       padding: 15px 0;
       letter-spacing: 1px;
     }
@@ -96,6 +109,11 @@
 </head>
 <body>
   <div id="background"></div>
+  
+  <div id="kirby-container">
+    <img id="kirby-gif" src="font/kirby.gif" alt="Kirby">
+  </div>
+  
   <div id="message-container">
     <div id="message">It's time to wrap things up! Get ready for bed!</div>
   </div>
