@@ -208,7 +208,7 @@
       background-color: rgba(255, 255, 255, 0.7);
       padding: 10px 15px;
       border-radius: 20px;
-      font-size: 14px;
+      font-size: 22px;
       color: #333;
       z-index: 2;
       transition: all 1s ease;
@@ -222,7 +222,7 @@
     .date-centered {
       top: 50%;
       transform: translate(-50%, -50%);
-      font-size: 22px;
+      font-size: 16px; /* You can adjust this value to change the centered date font size */
       padding: 15px 25px;
       opacity: 1;
     }
@@ -232,7 +232,7 @@
       right: 20px;
       left: auto;
       transform: none;
-      font-size: 14px;
+      font-size: 14px; /* You can adjust this value to change the corner date font size */
       opacity: 1; /* Ensure opacity remains at 1 when moving to corner */
     }
     
@@ -420,7 +420,7 @@
         }, 2000); // ← ADJUST THIS VALUE to change how long the date stays centered before updating to today's date and shaking
       }, 500); // Start sliding in after 500ms
     }
-  
+    
     function forceAudioPlay() {
       const audio = document.getElementById('background-audio');
       
