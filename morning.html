@@ -207,7 +207,7 @@
     .date-container {
       position: fixed;
       background-color: rgba(255, 255, 255, 0.7);
-      padding: 10px 15px;
+      padding: 15px 25px; /* Match the padding in date-centered */
       border-radius: 20px;
       font-size: 14px;
       color: #333;
@@ -219,6 +219,7 @@
       opacity: 0;
       /* Clean, simple transition */
       transition: all 0.8s ease;
+      margin-left: 0; /* Set initial margin to prevent jumps */
     }
     
     .date-centered {
@@ -388,20 +389,31 @@
       const options = { weekday: 'long', month: 'long', day: 'numeric' };
       dateDisplay.textContent = yesterday.toLocaleDateString('en-US', options);
       
+      // Pre-calculate today's date to ensure consistent element size
+      const today = new Date();
+      const todayText = today.toLocaleDateString('en-US', options);
+      
+      // Force layout calculation to prevent jumps
+      // This ensures the element size is accounted for before animations
+      const dummy = dateDisplay.getBoundingClientRect();
+      
       // Slide in animation for date display
       setTimeout(() => {
+        // Fade in and center
         dateDisplay.style.opacity = '1';
         dateDisplay.classList.add('date-centered');
         
-        // Update to today's date after sliding in
+        // Update to today's date after sliding in is complete
         setTimeout(() => {
-          // Update to today's date
-          const today = new Date();
-          dateDisplay.textContent = today.toLocaleDateString('en-US', options);
+          // Update text content without changing position
+          dateDisplay.textContent = todayText;
           
-          // Add shake class immediately after updating the date
-          // This ensures no position change between date update and shake
-          dateDisplay.classList.add('date-shake');
+          // Add shake class on the next animation frame to ensure smooth transition
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              dateDisplay.classList.add('date-shake');
+            });
+          });
           
           // After shake animation completes
           setTimeout(() => {
