@@ -378,50 +378,47 @@
     }
     
     function updateDate() {
-      const dateDisplay = document.getElementById('date-display');
+  const dateDisplay = document.getElementById('date-display');
+  
+  // Show yesterday's date first
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+  const options = { weekday: 'long', month: 'long', day: 'numeric' };
+  dateDisplay.textContent = yesterday.toLocaleDateString('en-US', options);
+  
+  // Slide in animation for date display
+  setTimeout(() => {
+    dateDisplay.classList.add('date-centered');
+    
+    // Update to today's date after sliding in
+    setTimeout(() => {
+      // Update to today's date
+      const today = new Date();
+      dateDisplay.textContent = today.toLocaleDateString('en-US', options);
       
-      // Show yesterday's date first
-      const yesterday = new Date();
-      yesterday.setDate(yesterday.getDate() - 1);
-      const options = { weekday: 'long', month: 'long', day: 'numeric' };
-      dateDisplay.textContent = yesterday.toLocaleDateString('en-US', options);
+      // Add shake class - the date is already centered from above
+      dateDisplay.classList.add('date-shake');
       
-      // Slide in animation for date display
+      // After shake animation completes
       setTimeout(() => {
-        dateDisplay.classList.add('date-centered');
+        // Remove shake class but keep centered
+        dateDisplay.classList.remove('date-shake');
         
-        // Update to today's date after sliding in
+        // Wait a moment before moving to corner
         setTimeout(() => {
-          // Update to today's date at the same moment shaking starts
-          const today = new Date();
-          dateDisplay.textContent = today.toLocaleDateString('en-US', options);
+          // Move to corner position
+          dateDisplay.classList.remove('date-centered');
+          dateDisplay.classList.add('date-corner');
           
-          // This delay (1000ms = 1 second) controls how long the date stays in the center before shaking
-          // You can increase or decrease this value to change the timing
-          
-          // Add shake class
-          dateDisplay.classList.add('date-shake');
-          
-          // After shake animation completes, wait a second before moving
-          setTimeout(() => {
-            // Remove shake class but keep centered
-            dateDisplay.classList.remove('date-shake');
-            
-            // Wait a second before moving to corner
-            setTimeout(() => {
-              // Move to corner position
-              dateDisplay.classList.remove('date-centered');
-              dateDisplay.classList.add('date-corner');
-              
-              // Show other elements
-              document.getElementById('kirby-container').style.opacity = '1';
-              document.getElementById('message-container').style.opacity = '1';
-              document.getElementById('checklist-container').style.opacity = '1';
-            }, 1000); // Wait 1 second after shake stops
-          }, 700); // Wait for shake animation to complete
-        }, 1000); // ← ADJUST THIS VALUE to change how long the date stays centered before updating to today's date and shaking
-      }, 500); // Start sliding in after 500ms
-    }
+          // Show other elements
+          document.getElementById('kirby-container').style.opacity = '1';
+          document.getElementById('message-container').style.opacity = '1';
+          document.getElementById('checklist-container').style.opacity = '1';
+        }, 1000); // Wait 1 second after shake stops
+      }, 700); // Wait for shake animation to complete
+    }, 1000); // Time before updating to today's date and starting shake
+  }, 500); // Start sliding in after 500ms
+}
     
     function forceAudioPlay() {
       const audio = document.getElementById('background-audio');
