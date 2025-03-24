@@ -225,9 +225,11 @@
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      font-size: 14px; /* You can adjust this value to change the centered date font size */
+      font-size: 14px;
       padding: 15px 25px;
       opacity: 1;
+      /* Keep these consistent to prevent jumps */
+      margin-left: 0;
     }
     
     .date-corner {
@@ -235,7 +237,7 @@
       right: 20px;
       left: auto;
       transform: none;
-      font-size: 14px; /* You can adjust this value to change the corner date font size */
+      font-size: 14px;
       opacity: 1;
     }
     
@@ -378,47 +380,48 @@
     }
     
     function updateDate() {
-  const dateDisplay = document.getElementById('date-display');
-  
-  // Show yesterday's date first
-  const yesterday = new Date();
-  yesterday.setDate(yesterday.getDate() - 1);
-  const options = { weekday: 'long', month: 'long', day: 'numeric' };
-  dateDisplay.textContent = yesterday.toLocaleDateString('en-US', options);
-  
-  // Slide in animation for date display
-  setTimeout(() => {
-    dateDisplay.classList.add('date-centered');
-    
-    // Update to today's date after sliding in
-    setTimeout(() => {
-      // Update to today's date
-      const today = new Date();
-      dateDisplay.textContent = today.toLocaleDateString('en-US', options);
+      const dateDisplay = document.getElementById('date-display');
       
-      // Add shake class - the date is already centered from above
-      dateDisplay.classList.add('date-shake');
+      // Show yesterday's date first
+      const yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+      const options = { weekday: 'long', month: 'long', day: 'numeric' };
+      dateDisplay.textContent = yesterday.toLocaleDateString('en-US', options);
       
-      // After shake animation completes
+      // Slide in animation for date display
       setTimeout(() => {
-        // Remove shake class but keep centered
-        dateDisplay.classList.remove('date-shake');
+        dateDisplay.style.opacity = '1';
+        dateDisplay.classList.add('date-centered');
         
-        // Wait a moment before moving to corner
+        // Update to today's date after sliding in
         setTimeout(() => {
-          // Move to corner position
-          dateDisplay.classList.remove('date-centered');
-          dateDisplay.classList.add('date-corner');
+          // Update to today's date
+          const today = new Date();
+          dateDisplay.textContent = today.toLocaleDateString('en-US', options);
           
-          // Show other elements
-          document.getElementById('kirby-container').style.opacity = '1';
-          document.getElementById('message-container').style.opacity = '1';
-          document.getElementById('checklist-container').style.opacity = '1';
-        }, 1000); // Wait 1 second after shake stops
-      }, 700); // Wait for shake animation to complete
-    }, 1000); // Time before updating to today's date and starting shake
-  }, 500); // Start sliding in after 500ms
-}
+          // Add shake class immediately after updating the date
+          // This ensures no position change between date update and shake
+          dateDisplay.classList.add('date-shake');
+          
+          // After shake animation completes
+          setTimeout(() => {
+            // Remove shake class but keep centered
+            dateDisplay.classList.remove('date-shake');
+            
+            // Move to corner position after shake is done
+            setTimeout(() => {
+              dateDisplay.classList.remove('date-centered');
+              dateDisplay.classList.add('date-corner');
+              
+              // Show other elements
+              document.getElementById('kirby-container').style.opacity = '1';
+              document.getElementById('message-container').style.opacity = '1';
+              document.getElementById('checklist-container').style.opacity = '1';
+            }, 500); // Wait half a second after shake stops before moving to corner
+          }, 700); // Wait for shake animation to complete (matches the animation duration)
+        }, 2000); // Wait 1 second after centering before updating date and starting shake
+      }, 500); // Start sliding in after 500ms
+    }
     
     function forceAudioPlay() {
       const audio = document.getElementById('background-audio');
