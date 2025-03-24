@@ -49,7 +49,7 @@
     
     #kirby-container {
       position: fixed;
-      top: 22%; /* Moved up even more to make room for kanban */
+      top: 22%; 
       left: 50%;
       transform: translate(-50%, -50%);
       z-index: 1;
@@ -111,133 +111,139 @@
       letter-spacing: 1px;
     }
     
-    /* Kanban styles */
-    #kanban-container {
+    /* Morning Routine Checklist */
+    #checklist-container {
       position: fixed;
-      top: 35%;
+      top: 40%;
       left: 50%;
       transform: translateX(-50%);
-      width: 92%;
-      max-width: 800px;
-      height: 60%;
+      width: 80%;
+      max-width: 500px;
       background-color: rgba(255, 255, 255, 0.9);
       border-radius: 15px;
-      overflow: hidden; /* Prevent scrolling */
+      overflow: hidden;
       z-index: 1;
       box-shadow: 0 5px 25px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      transition: all 0.5s ease;
+      opacity: 0;
+    }
+    
+    #completion-message {
+      text-align: center;
+      color: #FF9933;
+      font-size: 24px;
+      margin: 10px 0;
+      display: none;
+    }
+    
+    #checklist-title {
+      text-align: center;
+      color: #FF9933;
+      margin-top: 0;
+      margin-bottom: 15px;
+      font-size: 22px;
+    }
+    
+    .checklist-item {
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
       padding: 10px;
-    }
-    
-    .kanban-board {
-      display: flex;
-      flex-direction: column; /* Stack columns vertically for mobile */
-      height: 100%;
-      gap: 8px;
-      overflow-y: auto; /* Allow scrolling only if absolutely necessary */
-      padding-right: 5px;
-    }
-    
-    .kanban-column {
-      background-color: rgba(245, 245, 245, 0.8);
       border-radius: 8px;
-      padding: 8px;
-      display: flex;
-      flex-direction: column;
+      background-color: rgba(245, 245, 245, 0.7);
+      transition: background-color 0.3s ease;
     }
     
-    /* Media query for larger screens */
-    @media (min-width: 768px) {
-      .kanban-board {
-        flex-direction: row; /* Horizontal layout on larger screens */
-      }
-      
-      .kanban-column {
-        flex: 1;
-        min-width: 200px;
-      }
+    .checklist-item:last-child {
+      margin-bottom: 0;
     }
     
-    .kanban-column-header {
-      font-size: 14px;
-      font-weight: bold;
-      margin-bottom: 6px;
-      padding-bottom: 4px;
-      border-bottom: 2px solid rgba(0, 0, 0, 0.1);
-      color: #555;
+    .checklist-item.completed {
+      background-color: rgba(200, 255, 200, 0.7);
     }
     
-    .kanban-cards {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-    }
-    
-    .kanban-card {
-      background-color: white;
+    .checklist-checkbox {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 24px;
+      height: 24px;
+      border: 2px solid #FFB74D;
       border-radius: 6px;
-      padding: 8px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-      border-left: 3px solid #8ED1FC;
-      font-size: 12px;
-      width: 100%;
+      margin-right: 12px;
+      position: relative;
+      cursor: pointer;
+      transition: all 0.3s ease;
     }
     
-    .kanban-card.high-priority {
-      border-left: 3px solid #FF5252;
+    .checklist-checkbox:checked {
+      background-color: #FFB74D;
+      border-color: #FFB74D;
     }
     
-    .kanban-card.medium-priority {
-      border-left: 3px solid #FFB74D;
+    .checklist-checkbox:checked::after {
+      content: "✓";
+      font-size: 18px;
+      color: white;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
     }
     
-    .kanban-card.low-priority {
-      border-left: 3px solid #4FC3F7;
+    .checklist-label {
+      font-size: 18px;
+      color: #333;
+      transition: all 0.3s ease;
+      flex: 1;
     }
     
-    .task-checkbox {
-      margin-right: 5px;
-    }
-    
-    .task-completed {
+    .checklist-item.completed .checklist-label {
       text-decoration: line-through;
       opacity: 0.7;
     }
     
     .date-container {
       position: fixed;
-      top: 20px;
-      right: 20px;
       background-color: rgba(255, 255, 255, 0.7);
       padding: 10px 15px;
       border-radius: 20px;
       font-size: 14px;
       color: #333;
       z-index: 2;
+      transition: top 1s ease, right 1s ease, font-size 1s ease, padding 1s ease;
     }
     
-    .loading {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100%;
-      width: 100%;
-      background-color: rgba(255, 255, 255, 0.7);
-      border-radius: 8px;
+    .date-centered {
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 22px;
+      padding: 15px 25px;
     }
     
-    .loading-spinner {
-      border: 4px solid rgba(0, 0, 0, 0.1);
-      border-radius: 50%;
-      border-top: 4px solid #3498db;
-      width: 30px;
-      height: 30px;
-      animation: spin 1s linear infinite;
-      margin-right: 10px;
+    .date-corner {
+      top: 20px;
+      right: 20px;
+      font-size: 14px;
     }
     
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
+    .date-shake {
+      animation: dateShake 0.7s ease;
+    }
+    
+    @keyframes dateShake {
+      0% { margin-left: 0; }
+      10% { margin-left: -10px; }
+      20% { margin-left: 10px; }
+      30% { margin-left: -10px; }
+      40% { margin-left: 10px; }
+      50% { margin-left: -10px; }
+      60% { margin-left: 10px; }
+      70% { margin-left: -10px; }
+      80% { margin-left: 10px; }
+      90% { margin-left: -10px; }
+      100% { margin-left: 0; }
     }
     
     @keyframes scrollText {
@@ -256,23 +262,37 @@
   <div id="background"></div>
   <div id="clouds-container"></div>
   
-  <div class="date-container" id="date-display"></div>
+  <div class="date-container date-centered" id="date-display"></div>
   
-  <div id="kirby-container">
+  <div id="kirby-container" style="opacity: 0; transition: opacity 1s ease;">
     <img id="kirby-gif" src="font/kirby.gif" alt="Kirby">
   </div>
   
-  <div id="message-container">
+  <div id="message-container" style="opacity: 0; transition: opacity 1s ease;">
     <div id="message">Good morning! Rise and shine! Today is going to be a great day.</div>
   </div>
   
-  <div id="kanban-container">
-    <div class="kanban-board" id="kanban-board">
-      <div class="loading">
-        <div class="loading-spinner"></div>
-        <p>Loading your tasks...</p>
+  <div id="checklist-container">
+    <h2 id="checklist-title">Morning Routine</h2>
+    <div id="morning-checklist">
+      <div class="checklist-item">
+        <input type="checkbox" class="checklist-checkbox" id="task1">
+        <label for="task1" class="checklist-label">Brush teeth</label>
+      </div>
+      <div class="checklist-item">
+        <input type="checkbox" class="checklist-checkbox" id="task2">
+        <label for="task2" class="checklist-label">Shower</label>
+      </div>
+      <div class="checklist-item">
+        <input type="checkbox" class="checklist-checkbox" id="task3">
+        <label for="task3" class="checklist-label">Sunscreen</label>
+      </div>
+      <div class="checklist-item">
+        <input type="checkbox" class="checklist-checkbox" id="task4">
+        <label for="task4" class="checklist-label">Devotional</label>
       </div>
     </div>
+    <div id="completion-message">Good job! Have a nice day! 😊</div>
   </div>
   
   <audio id="background-audio" preload="auto" autoplay muted>
@@ -281,9 +301,6 @@
   </audio>
   
   <script>
-    // Define kanbanData variable to store the loaded data
-    let kanbanData = null;
-    
     function createClouds() {
       const cloudsContainer = document.getElementById('clouds-container');
       const numClouds = 6; // Adjust number of clouds
@@ -323,9 +340,41 @@
     
     function updateDate() {
       const dateDisplay = document.getElementById('date-display');
-      const now = new Date();
+      
+      // Show yesterday's date first
+      const yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
       const options = { weekday: 'long', month: 'long', day: 'numeric' };
-      dateDisplay.textContent = now.toLocaleDateString('en-US', options);
+      dateDisplay.textContent = yesterday.toLocaleDateString('en-US', options);
+      
+      // After a delay, change to today's date with animation
+      setTimeout(() => {
+        // Update to today's date at the same moment shaking starts
+        const today = new Date();
+        dateDisplay.textContent = today.toLocaleDateString('en-US', options);
+        
+        // Add shake class
+        dateDisplay.classList.add('date-shake');
+        
+        // After shake animation completes, wait a second before moving
+        setTimeout(() => {
+          // Remove shake class but keep centered
+          dateDisplay.classList.remove('date-shake');
+          
+          // Wait a second before moving to corner
+          setTimeout(() => {
+            // Create a transition for the movement to corner
+            dateDisplay.style.transition = 'all 1s ease';
+            dateDisplay.classList.remove('date-centered');
+            dateDisplay.classList.add('date-corner');
+            
+            // Show other elements
+            document.getElementById('kirby-container').style.opacity = '1';
+            document.getElementById('message-container').style.opacity = '1';
+            document.getElementById('checklist-container').style.opacity = '1';
+          }, 1000); // Wait 1 second after shake stops
+        }, 700); // Wait for shake animation to complete
+      }, 1500);
     }
     
     function forceAudioPlay() {
@@ -351,114 +400,82 @@
       }, { once: true });
     }
     
-    function renderKanban(data) {
-      if (!data || !data.columns) {
-        const kanbanBoard = document.getElementById('kanban-board');
-        kanbanBoard.innerHTML = '<div style="background-color: rgba(255,255,255,0.9); padding: 15px; border-radius: 8px; text-align: center; width: 100%;"><p>Could not load your tasks. Invalid data format.</p></div>';
-        return;
+    // Setup checkbox functionality
+    function setupCheckboxes() {
+      const checkboxes = document.querySelectorAll('.checklist-checkbox');
+      const checklistContainer = document.getElementById('checklist-container');
+      const morningChecklist = document.getElementById('morning-checklist');
+      const checklistTitle = document.getElementById('checklist-title');
+      const completionMessage = document.getElementById('completion-message');
+      
+      // Function to check if all tasks are completed
+      function checkAllCompleted() {
+        const allChecked = Array.from(checkboxes).every(checkbox => checkbox.checked);
+        
+        if (allChecked) {
+          // Show completion state
+          morningChecklist.style.display = 'none';
+          checklistTitle.style.display = 'none';
+          completionMessage.style.display = 'block';
+          checklistContainer.style.height = 'auto';
+          checklistContainer.style.padding = '30px 20px';
+        } else {
+          // Show normal checklist
+          morningChecklist.style.display = 'block';
+          checklistTitle.style.display = 'block';
+          completionMessage.style.display = 'none';
+        }
       }
       
-      const kanbanBoard = document.getElementById('kanban-board');
-      kanbanBoard.innerHTML = '';
-      
-      // Filter out empty columns, special columns, and the Archive column
-      const columnsToRender = data.columns.filter(column => 
-        column.cards.length > 0 && 
-        !column.id.includes('[[') && 
-        column.id !== 'archive'
-      );
-      
-      columnsToRender.forEach(column => {
-        const columnElement = document.createElement('div');
-        columnElement.className = 'kanban-column';
+      checkboxes.forEach(checkbox => {
+        // Load saved state from localStorage
+        const savedState = localStorage.getItem(checkbox.id);
+        if (savedState === 'true') {
+          checkbox.checked = true;
+          checkbox.closest('.checklist-item').classList.add('completed');
+        }
         
-        const headerElement = document.createElement('div');
-        headerElement.className = 'kanban-column-header';
-        headerElement.textContent = column.title;
-        
-        const cardsContainer = document.createElement('div');
-        cardsContainer.className = 'kanban-cards';
-        
-        column.cards.forEach(card => {
-          const cardElement = document.createElement('div');
-          cardElement.className = `kanban-card ${card.priority !== 'normal' ? card.priority + '-priority' : ''}`;
-          
-          // Process the task content to handle checkboxes
-          let content = card.content;
-          let isCompleted = false;
-          
-          // Check if it's a task with a checkbox
-          if (content.startsWith('[x]') || content.startsWith('[X]')) {
-            isCompleted = true;
-            content = content.substring(3).trim();
-            
-            // Add completed class to the card element
-            cardElement.classList.add('task-completed');
-            
-            // Create the content with checkbox
-            cardElement.innerHTML = '<span class="task-checkbox">☑️</span> <span style="text-decoration: line-through; opacity: 0.7;">' + content + '</span>';
-          } else if (content.startsWith('[ ]')) {
-            isCompleted = false;
-            content = content.substring(3).trim();
-            
-            // Create the content with checkbox
-            cardElement.innerHTML = '<span class="task-checkbox">☐</span> <span>' + content + '</span>';
+        checkbox.addEventListener('change', function() {
+          // Toggle completed class on parent element
+          if (this.checked) {
+            this.closest('.checklist-item').classList.add('completed');
           } else {
-            // Regular content without checkbox
-            cardElement.textContent = content;
+            this.closest('.checklist-item').classList.remove('completed');
           }
           
-          cardsContainer.appendChild(cardElement);
+          // Save state to localStorage
+          localStorage.setItem(this.id, this.checked);
+          
+          // Check if all tasks are completed
+          checkAllCompleted();
+        });
+      });
+      
+      // Initial check for completion
+      checkAllCompleted();
+      
+      // Reset checkboxes at midnight
+      const resetCheckTime = new Date();
+      resetCheckTime.setHours(24, 0, 0, 0); // Set to midnight
+      
+      const now = new Date();
+      const timeUntilReset = resetCheckTime.getTime() - now.getTime();
+      
+      setTimeout(() => {
+        checkboxes.forEach(checkbox => {
+          checkbox.checked = false;
+          checkbox.closest('.checklist-item').classList.remove('completed');
+          localStorage.setItem(checkbox.id, false);
         });
         
-        columnElement.appendChild(headerElement);
-        columnElement.appendChild(cardsContainer);
-        kanbanBoard.appendChild(columnElement);
-      });
-    }
-    
-    // Function to fetch Kanban data using a CORS proxy
-    async function fetchKanbanData() {
-      try {
-        // Using a CORS proxy to access the Google Drive file
-        const corsProxy = 'https://corsproxy.io/?';
-        const driveURL = 'https://drive.google.com/uc?export=download&id=12uZociZJ57fZR6MlglJMmgZNjD1Kvs95';
-        const response = await fetch(corsProxy + encodeURIComponent(driveURL));
+        // Reset display
+        morningChecklist.style.display = 'block';
+        checklistTitle.style.display = 'block';
+        completionMessage.style.display = 'none';
         
-        if (!response.ok) {
-          throw new Error('Failed to fetch Kanban data');
-        }
-        
-        const data = await response.json();
-        console.log('Successfully fetched data');
-        kanbanData = data; // Store the fetched data
-        renderKanban(data);
-      } catch (error) {
-        console.error('Error fetching Kanban data:', error);
-        
-        // Try alternative CORS proxy if the first one fails
-        try {
-          console.log('Trying alternative CORS proxy...');
-          const alt_corsProxy = 'https://api.allorigins.win/raw?url=';
-          const driveURL = 'https://drive.google.com/uc?export=download&id=12uZociZJ57fZR6MlglJMmgZNjD1Kvs95';
-          const alt_response = await fetch(alt_corsProxy + encodeURIComponent(driveURL));
-          
-          if (!alt_response.ok) {
-            throw new Error('Failed to fetch with alternative proxy');
-          }
-          
-          const alt_data = await alt_response.json();
-          console.log('Successfully fetched data with alternative proxy');
-          kanbanData = alt_data;
-          renderKanban(alt_data);
-        } catch (alt_error) {
-          console.error('All proxy attempts failed:', alt_error);
-          
-          // Display error message
-          const kanbanBoard = document.getElementById('kanban-board');
-          kanbanBoard.innerHTML = '<div style="background-color: rgba(255,255,255,0.9); padding: 15px; border-radius: 8px; text-align: center; width: 100%;"><p>Could not load your tasks. Please check your connection.</p><p>Try opening this page as a bookmark instead of from Shortcuts.</p></div>';
-        }
-      }
+        // Set the next reset
+        setupCheckboxes();
+      }, timeUntilReset);
     }
     
     window.onload = function() {
@@ -466,7 +483,7 @@
       createClouds();
       getMessageFromURL();
       forceAudioPlay();
-      fetchKanbanData(); // Now using CORS proxy
+      setupCheckboxes();
     };
   </script>
 </body>
