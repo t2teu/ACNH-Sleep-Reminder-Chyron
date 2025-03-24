@@ -243,7 +243,7 @@
     }
     
     .date-shake {
-      animation: dateShake 0.7s ease;
+      animation: dateShake 0.3s ease;
     }
     
     /* Reset button styling */
@@ -272,15 +272,15 @@
     
     @keyframes dateShake {
       0% { margin-left: 0; }
-      10% { margin-left: -10px; }
-      20% { margin-left: 10px; }
-      30% { margin-left: -10px; }
-      40% { margin-left: 10px; }
-      50% { margin-left: -10px; }
-      60% { margin-left: 10px; }
-      70% { margin-left: -10px; }
-      80% { margin-left: 10px; }
-      90% { margin-left: -10px; }
+      10% { margin-left: -2px; }
+      20% { margin-left: 2px; }
+      30% { margin-left: -2px; }
+      40% { margin-left: 2px; }
+      50% { margin-left: -2px; }
+      60% { margin-left: 2px; }
+      70% { margin-left: -2px; }
+      80% { margin-left: 2px; }
+      90% { margin-left: -2px; }
       100% { margin-left: 0; }
     }
     
@@ -431,8 +431,8 @@
               document.getElementById('checklist-container').style.opacity = '1';
             }, 500); // Wait half a second after shake stops before moving to corner
           }, 700); // Wait for shake animation to complete (matches the animation duration)
-        }, 2000); // Wait 1 second after centering before updating date and starting shake
-      }, 500); // Start sliding in after 500ms
+        }, 1500); // Wait 1 second after centering before updating date and starting shake
+      }, 250); // Start sliding in after 500ms
     }
     
     function forceAudioPlay() {
