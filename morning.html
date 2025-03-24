@@ -212,17 +212,19 @@
       font-size: 14px;
       color: #333;
       z-index: 2;
-      /* Use explicit transforms for iOS compatibility */
+      /* Initial position off-screen */
+      top: 100%;
       left: 50%;
-      transform: translate(-50%, 100vh); /* Start off-screen below */
+      transform: translate(-50%, 0);
       opacity: 0;
-      /* Don't transition transform and other props together to avoid iOS jumping */
-      transition: opacity 0.8s ease, transform 0.8s ease; 
+      /* Clean, simple transition */
+      transition: all 0.8s ease;
     }
     
     .date-centered {
+      top: 50%;
+      left: 50%;
       transform: translate(-50%, -50%);
-      top: 50%; /* Force position */
       font-size: 14px; /* You can adjust this value to change the centered date font size */
       padding: 15px 25px;
       opacity: 1;
@@ -234,7 +236,7 @@
       left: auto;
       transform: none;
       font-size: 14px; /* You can adjust this value to change the corner date font size */
-      opacity: 1; /* Ensure opacity remains at 1 when moving to corner */
+      opacity: 1;
     }
     
     .date-shake {
@@ -407,12 +409,7 @@
             
             // Wait a second before moving to corner
             setTimeout(() => {
-              // Ensure we keep the element visible during transition
-              dateDisplay.style.opacity = '1';
-              
-              // Force reflow before changing classes to help prevent iOS jumping
-              void dateDisplay.offsetWidth;
-              
+              // Move to corner position
               dateDisplay.classList.remove('date-centered');
               dateDisplay.classList.add('date-corner');
               
@@ -422,7 +419,7 @@
               document.getElementById('checklist-container').style.opacity = '1';
             }, 1000); // Wait 1 second after shake stops
           }, 700); // Wait for shake animation to complete
-        }, 2000); // ← ADJUST THIS VALUE to change how long the date stays centered before updating to today's date and shaking
+        }, 1000); // ← ADJUST THIS VALUE to change how long the date stays centered before updating to today's date and shaking
       }, 500); // Start sliding in after 500ms
     }
     
