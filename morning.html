@@ -8,21 +8,19 @@
   <meta name="theme-color" content="#8ED1FC">
   <link rel="shortcut icon" href="font/kirby_sleep.ico" type="image/x-icon">
   <title>Good Morning</title>
+  <!-- Preload critical assets -->
+  <link rel="preload" href="font/FOT-Seurat\ Pro\ B.otf" as="font" type="font/otf" crossorigin>
+  <link rel="preload" href="font/kirby.gif" as="image">
+  <link rel="preload" href="font/ipad_ls_morning.png" as="image">
   <style>
-    @font-face {
-      font-family: 'Seurat Pro B';
-      src: url('font/FOT-Seurat\ Pro\ B.otf') format('opentype');
-      font-weight: normal;
-      font-style: normal;
-    }
-    
+    /* Critical CSS for initial render */
     body, html {
       margin: 0;
       padding: 0;
       height: 100%;
       width: 100%;
       overflow: hidden;
-      font-family: 'Seurat Pro B', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
       background-color: #8ED1FC; /* Light blue for morning */
     }
     
@@ -32,288 +30,51 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background-image: url('font/ipad_ls_morning.png'); /* Update with morning background */
-      background-size: cover;
-      background-position: center;
+      background-color: #8ED1FC; /* Fallback before image loads */
       z-index: -1;
     }
     
-    .cloud {
-      position: absolute;
-      background-image: url('font/cloud.png'); /* Replace with cloud image */
-      background-size: contain;
-      background-repeat: no-repeat;
-      z-index: 0;
-      opacity: 0.9;
-    }
-    
-    #clouds-container {
+    /* Loading indicator */
+    #loading {
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 0;
-      pointer-events: none;
-    }
-    
-    #kirby-container {
-      position: fixed;
-      top: 22%; 
-      left: 50%;
-      transform: translate(-50%, -50%);
-      z-index: 1;
-    }
-    
-    #kirby-gif {
-      max-width: 120px;
-      max-height: 120px;
-    }
-    
-    #message-container {
-      position: fixed;
-      top: 100px;
-      left: 0;
-      width: 100%;
-      overflow: hidden;
-      height: 60px;
-      background-color: rgba(255, 183, 77, 0.8); /* Orange-yellow for morning */
-    }
-    
-    #message-container::before {
-      content: "";
-      position: absolute;
-      top: 3px;
-      left: 0;
-      right: 0;
-      height: 4px;
-      background-image: 
-        radial-gradient(ellipse 7px 2px, #FFE4B5 50%, transparent 50%);
-      background-size: 12px 4px;
-      background-repeat: repeat-x;
-      opacity: 0.5;
-      pointer-events: none;
-    }
-    
-    #message-container::after {
-      content: "";
-      position: absolute;
-      bottom: 3px;
-      left: 0;
-      right: 0;
-      height: 4px;
-      background-image: 
-        radial-gradient(ellipse 7px 2px, #FFE4B5 50%, transparent 50%);
-      background-size: 12px 4px;
-      background-repeat: repeat-x;
-      opacity: 0.5;
-      pointer-events: none;
-    }
-    
-    #message {
-      position: absolute;
-      color: white;
-      font-size: 16px;
-      font-weight: normal;
-      white-space: nowrap;
-      animation: scrollText 12s linear infinite;
-      padding: 15px 0;
-      letter-spacing: 1px;
-    }
-    
-    /* Morning Routine Checklist */
-    #checklist-container {
-      position: fixed;
-      top: 40%;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 80%;
-      max-width: 500px;
-      background-color: rgba(255, 255, 255, 0.9);
-      border-radius: 15px;
-      overflow: hidden;
-      z-index: 1;
-      box-shadow: 0 5px 25px rgba(0, 0, 0, 0.1);
-      padding: 20px;
-      transition: all 0.5s ease;
-      opacity: 0;
-    }
-    
-    #completion-message {
-      text-align: center;
-      color: #FF9933;
-      font-size: 24px;
-      margin: 10px 0;
-      display: none;
-    }
-    
-    #checklist-title {
-      text-align: center;
-      color: #FF9933;
-      margin-top: 0;
-      margin-bottom: 15px;
-      font-size: 22px;
-    }
-    
-    .checklist-item {
-      margin-bottom: 15px;
-      display: flex;
-      align-items: center;
-      padding: 10px;
-      border-radius: 8px;
-      background-color: rgba(245, 245, 245, 0.7);
-      transition: background-color 0.3s ease;
-    }
-    
-    .checklist-item:last-child {
-      margin-bottom: 0;
-    }
-    
-    .checklist-item.completed {
-      background-color: rgba(200, 255, 200, 0.7);
-    }
-    
-    .checklist-checkbox {
-      -webkit-appearance: none;
-      appearance: none;
-      width: 24px;
-      height: 24px;
-      border: 2px solid #FFB74D;
-      border-radius: 6px;
-      margin-right: 12px;
-      position: relative;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-    
-    .checklist-checkbox:checked {
-      background-color: #FFB74D;
-      border-color: #FFB74D;
-    }
-    
-    .checklist-checkbox:checked::after {
-      content: "✓";
-      font-size: 18px;
-      color: white;
-      position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-    }
-    
-    .checklist-label {
-      font-size: 18px;
-      color: #333;
-      transition: all 0.3s ease;
-      flex: 1;
-    }
-    
-    .checklist-item.completed .checklist-label {
-      text-decoration: line-through;
-      opacity: 0.7;
-    }
-    
-    /* Fix for iOS positioning issues */
-    .date-container {
-      position: fixed;
-      background-color: rgba(255, 255, 255, 0.7);
-      padding: 15px 25px; /* Match the padding in date-centered */
-      border-radius: 20px;
-      font-size: 14px;
-      color: #333;
-      z-index: 2;
-      /* Initial position off-screen */
-      top: 100%;
-      left: 50%;
-      transform: translate(-50%, 0);
-      opacity: 0;
-      /* Clean, simple transition */
-      transition: all 0.8s ease;
-      margin-left: 0; /* Set initial margin to prevent jumps */
-    }
-    
-    .date-centered {
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      font-size: 14px;
-      padding: 15px 25px;
-      opacity: 1;
-      /* Keep these consistent to prevent jumps */
-      margin-left: 0;
-    }
-    
-    .date-corner {
-      top: 20px;
-      right: 20px;
-      left: auto;
-      transform: none;
-      font-size: 14px;
-      opacity: 1;
-    }
-    
-    .date-shake {
-      animation: dateShake 0.3s ease;
-    }
-    
-    /* Reset button styling */
-    #reset-button {
-      background-color: #FFB74D;
+      text-align: center;
       color: white;
-      border: none;
-      border-radius: 20px;
-      padding: 8px 16px;
-      font-size: 16px;
-      cursor: pointer;
-      margin-top: 15px;
-      font-family: 'Seurat Pro B', sans-serif;
-      transition: all 0.3s ease;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      font-size: 20px;
+      z-index: 10;
     }
     
-    #reset-button:hover {
-      background-color: #FF9933;
-      transform: scale(1.05);
+    .spinner {
+      width: 40px;
+      height: 40px;
+      margin: 10px auto;
+      border: 4px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 1s linear infinite;
     }
     
-    #reset-button:active {
-      transform: scale(0.95);
-    }
-    
-    @keyframes dateShake {
-      0% { margin-left: 0; }
-      10% { margin-left: -2px; }
-      20% { margin-left: 2px; }
-      30% { margin-left: -2px; }
-      40% { margin-left: 2px; }
-      50% { margin-left: -2px; }
-      60% { margin-left: 2px; }
-      70% { margin-left: -2px; }
-      80% { margin-left: 2px; }
-      90% { margin-left: -2px; }
-      100% { margin-left: 0; }
-    }
-    
-    @keyframes scrollText {
-      from { left: 100%; }
-      to { left: -100%; }
-    }
-    
-    @keyframes float {
-      0% { transform: translateY(0px); }
-      50% { transform: translateY(-15px); }
-      100% { transform: translateY(0px); }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
     }
   </style>
 </head>
 <body>
+  <div id="loading">
+    <div class="spinner"></div>
+    <div>Loading...</div>
+  </div>
+  
   <div id="background"></div>
   <div id="clouds-container"></div>
   
   <div class="date-container" id="date-display"></div>
   
   <div id="kirby-container" style="opacity: 0; transition: opacity 1s ease;">
-    <img id="kirby-gif" src="font/kirby.gif" alt="Kirby">
+    <img id="kirby-gif" alt="Kirby">
   </div>
   
   <div id="message-container" style="opacity: 0; transition: opacity 1s ease;">
@@ -347,47 +108,420 @@
     </div>
   </div>
   
-  <audio id="background-audio" preload="auto" autoplay muted>
+  <audio id="background-audio" preload="none">
     <source src="font/goodmorning.mp3" type="audio/mp3">
     Your browser does not support the audio element.
   </audio>
   
+  <!-- Non-critical CSS (loaded asynchronously) -->
   <script>
+    // Function to load non-critical CSS
+    function loadNonCriticalCSS() {
+      const nonCriticalStyles = document.createElement('style');
+      nonCriticalStyles.textContent = `
+        @font-face {
+          font-family: 'Seurat Pro B';
+          src: url('font/FOT-Seurat\\ Pro\\ B.otf') format('opentype');
+          font-weight: normal;
+          font-style: normal;
+          font-display: swap; /* Use swap to prevent FOIT */
+        }
+        
+        body, html {
+          font-family: 'Seurat Pro B', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        }
+        
+        #background {
+          background-image: url('font/ipad_ls_morning.png');
+          background-size: cover;
+          background-position: center;
+        }
+        
+        .cloud {
+          position: absolute;
+          background-image: url('font/cloud.png');
+          background-size: contain;
+          background-repeat: no-repeat;
+          z-index: 0;
+          opacity: 0.9;
+        }
+        
+        #clouds-container {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          z-index: 0;
+          pointer-events: none;
+        }
+        
+        #kirby-container {
+          position: fixed;
+          top: 22%; 
+          left: 50%;
+          transform: translate(-50%, -50%);
+          z-index: 1;
+        }
+        
+        #kirby-gif {
+          max-width: 120px;
+          max-height: 120px;
+        }
+        
+        #message-container {
+          position: fixed;
+          top: 100px;
+          left: 0;
+          width: 100%;
+          overflow: hidden;
+          height: 60px;
+          background-color: rgba(255, 183, 77, 0.8);
+        }
+        
+        #message-container::before {
+          content: "";
+          position: absolute;
+          top: 3px;
+          left: 0;
+          right: 0;
+          height: 4px;
+          background-image: 
+            radial-gradient(ellipse 7px 2px, #FFE4B5 50%, transparent 50%);
+          background-size: 12px 4px;
+          background-repeat: repeat-x;
+          opacity: 0.5;
+          pointer-events: none;
+        }
+        
+        #message-container::after {
+          content: "";
+          position: absolute;
+          bottom: 3px;
+          left: 0;
+          right: 0;
+          height: 4px;
+          background-image: 
+            radial-gradient(ellipse 7px 2px, #FFE4B5 50%, transparent 50%);
+          background-size: 12px 4px;
+          background-repeat: repeat-x;
+          opacity: 0.5;
+          pointer-events: none;
+        }
+        
+        #message {
+          position: absolute;
+          color: white;
+          font-size: 16px;
+          font-weight: normal;
+          white-space: nowrap;
+          animation: scrollText 12s linear infinite;
+          padding: 15px 0;
+          letter-spacing: 1px;
+        }
+        
+        #checklist-container {
+          position: fixed;
+          top: 40%;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 80%;
+          max-width: 500px;
+          background-color: rgba(255, 255, 255, 0.9);
+          border-radius: 15px;
+          overflow: hidden;
+          z-index: 1;
+          box-shadow: 0 5px 25px rgba(0, 0, 0, 0.1);
+          padding: 20px;
+          transition: all 0.5s ease;
+          opacity: 0;
+        }
+        
+        #completion-message {
+          text-align: center;
+          color: #FF9933;
+          font-size: 24px;
+          margin: 10px 0;
+          display: none;
+        }
+        
+        #checklist-title {
+          text-align: center;
+          color: #FF9933;
+          margin-top: 0;
+          margin-bottom: 15px;
+          font-size: 22px;
+        }
+        
+        .checklist-item {
+          margin-bottom: 15px;
+          display: flex;
+          align-items: center;
+          padding: 10px;
+          border-radius: 8px;
+          background-color: rgba(245, 245, 245, 0.7);
+          transition: background-color 0.3s ease;
+        }
+        
+        .checklist-item:last-child {
+          margin-bottom: 0;
+        }
+        
+        .checklist-item.completed {
+          background-color: rgba(200, 255, 200, 0.7);
+        }
+        
+        .checklist-checkbox {
+          -webkit-appearance: none;
+          appearance: none;
+          width: 24px;
+          height: 24px;
+          border: 2px solid #FFB74D;
+          border-radius: 6px;
+          margin-right: 12px;
+          position: relative;
+          cursor: pointer;
+          transition: all 0.3s ease;
+        }
+        
+        .checklist-checkbox:checked {
+          background-color: #FFB74D;
+          border-color: #FFB74D;
+        }
+        
+        .checklist-checkbox:checked::after {
+          content: "✓";
+          font-size: 18px;
+          color: white;
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+        }
+        
+        .checklist-label {
+          font-size: 18px;
+          color: #333;
+          transition: all 0.3s ease;
+          flex: 1;
+        }
+        
+        .checklist-item.completed .checklist-label {
+          text-decoration: line-through;
+          opacity: 0.7;
+        }
+        
+        .date-container {
+          position: fixed;
+          background-color: rgba(255, 255, 255, 0.7);
+          padding: 15px 25px;
+          border-radius: 20px;
+          font-size: 14px;
+          color: #333;
+          z-index: 2;
+          top: 100%;
+          left: 50%;
+          transform: translate(-50%, 0);
+          opacity: 0;
+          transition: all 0.8s ease;
+          margin-left: 0;
+        }
+        
+        .date-centered {
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          font-size: 14px;
+          padding: 15px 25px;
+          opacity: 1;
+          margin-left: 0;
+        }
+        
+        .date-corner {
+          top: 20px;
+          right: 20px;
+          left: auto;
+          transform: none;
+          font-size: 14px;
+          opacity: 1;
+        }
+        
+        .date-shake {
+          animation: dateShake 0.3s ease;
+        }
+        
+        #reset-button {
+          background-color: #FFB74D;
+          color: white;
+          border: none;
+          border-radius: 20px;
+          padding: 8px 16px;
+          font-size: 16px;
+          cursor: pointer;
+          margin-top: 15px;
+          font-family: 'Seurat Pro B', sans-serif;
+          transition: all 0.3s ease;
+          box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        
+        #reset-button:hover {
+          background-color: #FF9933;
+          transform: scale(1.05);
+        }
+        
+        #reset-button:active {
+          transform: scale(0.95);
+        }
+        
+        @keyframes dateShake {
+          0% { margin-left: 0; }
+          10% { margin-left: -2px; }
+          20% { margin-left: 2px; }
+          30% { margin-left: -2px; }
+          40% { margin-left: 2px; }
+          50% { margin-left: -2px; }
+          60% { margin-left: 2px; }
+          70% { margin-left: -2px; }
+          80% { margin-left: 2px; }
+          90% { margin-left: -2px; }
+          100% { margin-left: 0; }
+        }
+        
+        @keyframes scrollText {
+          from { left: 100%; }
+          to { left: -100%; }
+        }
+        
+        @keyframes float {
+          0% { transform: translateY(0px); }
+          50% { transform: translateY(-15px); }
+          100% { transform: translateY(0px); }
+        }
+      `;
+      document.head.appendChild(nonCriticalStyles);
+    }
+    
+    // Create a Promise to track asset loading
+    const assetPromises = [];
+    
+    // Function to preload an image
+    function preloadImage(src) {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => resolve(img);
+        img.onerror = reject;
+        img.src = src;
+      });
+    }
+    
+    // Add assets to preload
+    assetPromises.push(preloadImage('font/kirby.gif'));
+    assetPromises.push(preloadImage('font/ipad_ls_morning.png'));
+    assetPromises.push(preloadImage('font/cloud.png'));
+    
+    // Function to wait for the font to load
+    function waitForFont() {
+      return new Promise((resolve) => {
+        // Check if font is already loaded
+        if (document.fonts && document.fonts.check('12px "Seurat Pro B"')) {
+          resolve();
+          return;
+        }
+        
+        // Use font loading API if available
+        if (document.fonts && document.fonts.ready) {
+          document.fonts.ready.then(() => {
+            if (document.fonts.check('12px "Seurat Pro B"')) {
+              resolve();
+            } else {
+              // Fallback: wait a bit and resolve anyway
+              setTimeout(resolve, 500);
+            }
+          });
+        } else {
+          // Fallback for browsers without font loading API
+          setTimeout(resolve, 500);
+        }
+      });
+    }
+    
+    // Main initialization function
+    async function init() {
+      // Load CSS in parallel with other operations
+      loadNonCriticalCSS();
+      
+      // Set up the Kirby GIF as soon as possible
+      document.getElementById('kirby-gif').src = 'font/kirby.gif';
+      
+      try {
+        // Wait for critical assets to load
+        await Promise.all(assetPromises);
+        
+        // Remove loading indicator
+        document.getElementById('loading').style.display = 'none';
+        
+        // Initialize all the components
+        updateDate();
+        createClouds();
+        getMessageFromURL();
+        setupCheckboxes();
+        
+        // Load audio after everything else
+        setTimeout(() => {
+          forceAudioPlay();
+        }, 1000);
+      } catch (error) {
+        console.error('Error loading assets:', error);
+        // Still remove loading indicator and proceed with what we have
+        document.getElementById('loading').style.display = 'none';
+        updateDate();
+        createClouds();
+        getMessageFromURL();
+        setupCheckboxes();
+      }
+    }
+    
+    // Cloud creation - optimized to batch DOM operations
     function createClouds() {
       const cloudsContainer = document.getElementById('clouds-container');
-      const numClouds = 15; // Adjust number of clouds
+      const numClouds = 15;
+      const fragment = document.createDocumentFragment();
       
       for (let i = 0; i < numClouds; i++) {
         const cloud = document.createElement('div');
         cloud.className = 'cloud';
         
-        // Start with opacity 0 for fade-in effect
         cloud.style.opacity = '0';
         cloud.style.transition = 'opacity 1.5s ease-in';
         
-        // Random size between 50px and 150px
         const size = Math.floor(Math.random() * 100) + 50;
         cloud.style.width = `${size}px`;
         cloud.style.height = `${size / 2}px`;
         
-        // Random position
         const left = Math.floor(Math.random() * 100);
         const top = Math.floor(Math.random() * 100);
         cloud.style.left = `${left}%`;
         cloud.style.top = `${top}%`;
         
-        // Random floating animation
-        const duration = Math.floor(Math.random() * 10) + 15; // 15-25 seconds
-        const delay = Math.floor(Math.random() * 5); // 0-5 seconds delay
+        const duration = Math.floor(Math.random() * 10) + 15;
+        const delay = Math.floor(Math.random() * 5);
         cloud.style.animation = `float ${duration}s ease-in-out ${delay}s infinite`;
         
-        cloudsContainer.appendChild(cloud);
-        
-        // Stagger the fade-in of each cloud
-        setTimeout(() => {
-          cloud.style.opacity = '0.9';
-        }, 250 + (i * 150)); // Start at 250ms, then add 150ms per cloud
+        fragment.appendChild(cloud);
       }
+      
+      // Single DOM update
+      cloudsContainer.appendChild(fragment);
+      
+      // Stagger fade-in with requestAnimationFrame for better performance
+      requestAnimationFrame(() => {
+        const clouds = document.querySelectorAll('.cloud');
+        clouds.forEach((cloud, i) => {
+          setTimeout(() => {
+            cloud.style.opacity = '0.9';
+          }, 50 + (i * 50));
+        });
+      });
     }
     
     function getMessageFromURL() {
@@ -408,54 +542,48 @@
       const options = { weekday: 'long', month: 'long', day: 'numeric' };
       dateDisplay.textContent = yesterday.toLocaleDateString('en-US', options);
       
-      // Pre-calculate today's date to ensure consistent element size
+      // Pre-calculate today's date
       const today = new Date();
       const todayText = today.toLocaleDateString('en-US', options);
       
-      // Force layout calculation to prevent jumps
-      // This ensures the element size is accounted for before animations
-      const dummy = dateDisplay.getBoundingClientRect();
-      
-      // Slide in animation for date display
-      setTimeout(() => {
-        // Fade in and center
-        dateDisplay.style.opacity = '1';
-        dateDisplay.classList.add('date-centered');
+      // This will be more performant with requestAnimationFrame
+      requestAnimationFrame(() => {
+        const dummy = dateDisplay.getBoundingClientRect();
         
-        // Update to today's date after sliding in is complete
+        // Slide in animation for date display
         setTimeout(() => {
-          // Update text content without changing position
-          dateDisplay.textContent = todayText;
+          dateDisplay.style.opacity = '1';
+          dateDisplay.classList.add('date-centered');
           
-          // Add shake class on the next animation frame to ensure smooth transition
-          requestAnimationFrame(() => {
+          setTimeout(() => {
+            dateDisplay.textContent = todayText;
+            
             requestAnimationFrame(() => {
               dateDisplay.classList.add('date-shake');
-            });
-          });
-          
-          // After shake animation completes
-          setTimeout(() => {
-            // Remove shake class but keep centered
-            dateDisplay.classList.remove('date-shake');
-            
-            // Move to corner position after shake is done
-            setTimeout(() => {
-              dateDisplay.classList.remove('date-centered');
-              dateDisplay.classList.add('date-corner');
               
-              // Show other elements
-              document.getElementById('kirby-container').style.opacity = '1';
-              document.getElementById('message-container').style.opacity = '1';
-              document.getElementById('checklist-container').style.opacity = '1';
-            }, 500); // Wait half a second after shake stops before moving to corner
-          }, 700); // Wait for shake animation to complete (matches the animation duration)
-        }, 1500); // Wait 1 second after centering before updating date and starting shake
-      }, 5000); // Start sliding in after 500ms
+              setTimeout(() => {
+                dateDisplay.classList.remove('date-shake');
+                
+                setTimeout(() => {
+                  dateDisplay.classList.remove('date-centered');
+                  dateDisplay.classList.add('date-corner');
+                  
+                  document.getElementById('kirby-container').style.opacity = '1';
+                  document.getElementById('message-container').style.opacity = '1';
+                  document.getElementById('checklist-container').style.opacity = '1';
+                }, 500);
+              }, 700);
+            });
+          }, 1500);
+        }, 1000); // Reduced from 5000 to 1000 for faster initial display
+      });
     }
     
     function forceAudioPlay() {
       const audio = document.getElementById('background-audio');
+      
+      // Load audio only when needed
+      audio.load();
       
       setTimeout(() => {
         audio.muted = false;
@@ -490,7 +618,6 @@
         localStorage.setItem(checkbox.id, false);
       });
       
-      // Reset display
       morningChecklist.style.display = 'block';
       checklistTitle.style.display = 'block';
       completionMessage.style.display = 'none';
@@ -505,22 +632,18 @@
       const completionMessage = document.getElementById('completion-message');
       const resetButton = document.getElementById('reset-button');
       
-      // Add event listener to reset button
       resetButton.addEventListener('click', resetChecklist);
       
-      // Function to check if all tasks are completed
       function checkAllCompleted() {
         const allChecked = Array.from(checkboxes).every(checkbox => checkbox.checked);
         
         if (allChecked) {
-          // Show completion state
           morningChecklist.style.display = 'none';
           checklistTitle.style.display = 'none';
           completionMessage.style.display = 'block';
           checklistContainer.style.height = 'auto';
           checklistContainer.style.padding = '30px 20px';
         } else {
-          // Show normal checklist
           morningChecklist.style.display = 'block';
           checklistTitle.style.display = 'block';
           completionMessage.style.display = 'none';
@@ -528,7 +651,6 @@
       }
       
       checkboxes.forEach(checkbox => {
-        // Load saved state from localStorage
         const savedState = localStorage.getItem(checkbox.id);
         if (savedState === 'true') {
           checkbox.checked = true;
@@ -536,46 +658,37 @@
         }
         
         checkbox.addEventListener('change', function() {
-          // Toggle completed class on parent element
           if (this.checked) {
             this.closest('.checklist-item').classList.add('completed');
           } else {
             this.closest('.checklist-item').classList.remove('completed');
           }
           
-          // Save state to localStorage
           localStorage.setItem(this.id, this.checked);
-          
-          // Check if all tasks are completed
           checkAllCompleted();
         });
       });
       
-      // Initial check for completion
       checkAllCompleted();
       
-      // Reset checkboxes at midnight
       const resetCheckTime = new Date();
-      resetCheckTime.setHours(24, 0, 0, 0); // Set to midnight
+      resetCheckTime.setHours(24, 0, 0, 0);
       
       const now = new Date();
       const timeUntilReset = resetCheckTime.getTime() - now.getTime();
       
       setTimeout(() => {
         resetChecklist();
-        
-        // Set the next reset
         setupCheckboxes();
       }, timeUntilReset);
     }
     
-    window.onload = function() {
-      updateDate();
-      createClouds();
-      getMessageFromURL();
-      forceAudioPlay();
-      setupCheckboxes();
-    };
+    // Start initialization when DOM is ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
   </script>
 </body>
 </html>
