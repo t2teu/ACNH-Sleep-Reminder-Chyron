@@ -47,6 +47,16 @@
       opacity: 0.9;
     }
     
+    #clouds-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
+    
     #kirby-container {
       position: fixed;
       top: 22%; 
@@ -345,11 +355,15 @@
   <script>
     function createClouds() {
       const cloudsContainer = document.getElementById('clouds-container');
-      const numClouds = 6; // Adjust number of clouds
+      const numClouds = 15; // Adjust number of clouds
       
       for (let i = 0; i < numClouds; i++) {
         const cloud = document.createElement('div');
         cloud.className = 'cloud';
+        
+        // Start with opacity 0 for fade-in effect
+        cloud.style.opacity = '0';
+        cloud.style.transition = 'opacity 1.5s ease-in';
         
         // Random size between 50px and 150px
         const size = Math.floor(Math.random() * 100) + 50;
@@ -358,7 +372,7 @@
         
         // Random position
         const left = Math.floor(Math.random() * 100);
-        const top = Math.floor(Math.random() * 50); // Keep clouds in upper half
+        const top = Math.floor(Math.random() * 100);
         cloud.style.left = `${left}%`;
         cloud.style.top = `${top}%`;
         
@@ -368,6 +382,11 @@
         cloud.style.animation = `float ${duration}s ease-in-out ${delay}s infinite`;
         
         cloudsContainer.appendChild(cloud);
+        
+        // Stagger the fade-in of each cloud
+        setTimeout(() => {
+          cloud.style.opacity = '0.9';
+        }, 250 + (i * 150)); // Start at 250ms, then add 150ms per cloud
       }
     }
     
