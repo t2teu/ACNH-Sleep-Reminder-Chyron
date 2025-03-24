@@ -211,25 +211,57 @@
       font-size: 14px;
       color: #333;
       z-index: 2;
-      transition: top 1s ease, right 1s ease, font-size 1s ease, padding 1s ease;
+      transition: all 1s ease;
+      /* Initially position it off screen and transparent */
+      top: 100%; 
+      left: 50%;
+      transform: translate(-50%, 0);
+      opacity: 0;
     }
     
     .date-centered {
       top: 50%;
-      left: 50%;
       transform: translate(-50%, -50%);
       font-size: 22px;
       padding: 15px 25px;
+      opacity: 1;
     }
     
     .date-corner {
       top: 20px;
       right: 20px;
+      left: auto;
+      transform: none;
       font-size: 14px;
+      opacity: 1; /* Ensure opacity remains at 1 when moving to corner */
     }
     
     .date-shake {
       animation: dateShake 0.7s ease;
+    }
+    
+    /* Reset button styling */
+    #reset-button {
+      background-color: #FFB74D;
+      color: white;
+      border: none;
+      border-radius: 20px;
+      padding: 8px 16px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 15px;
+      font-family: 'Seurat Pro B', sans-serif;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+    
+    #reset-button:hover {
+      background-color: #FF9933;
+      transform: scale(1.05);
+    }
+    
+    #reset-button:active {
+      transform: scale(0.95);
     }
     
     @keyframes dateShake {
@@ -262,7 +294,7 @@
   <div id="background"></div>
   <div id="clouds-container"></div>
   
-  <div class="date-container date-centered" id="date-display"></div>
+  <div class="date-container" id="date-display"></div>
   
   <div id="kirby-container" style="opacity: 0; transition: opacity 1s ease;">
     <img id="kirby-gif" src="font/kirby.gif" alt="Kirby">
@@ -292,7 +324,11 @@
         <label for="task4" class="checklist-label">Devotional</label>
       </div>
     </div>
-    <div id="completion-message">Good job! Have a nice day! 😊</div>
+    <div id="completion-message">
+      Good job! Have a nice day! 😊
+      <br><br>
+      <button id="reset-button">Reset Checklist</button>
+    </div>
   </div>
   
   <audio id="background-audio" preload="auto" autoplay muted>
@@ -347,36 +383,44 @@
       const options = { weekday: 'long', month: 'long', day: 'numeric' };
       dateDisplay.textContent = yesterday.toLocaleDateString('en-US', options);
       
-      // After a delay, change to today's date with animation
+      // Slide in animation for date display
       setTimeout(() => {
-        // Update to today's date at the same moment shaking starts
-        const today = new Date();
-        dateDisplay.textContent = today.toLocaleDateString('en-US', options);
+        dateDisplay.classList.add('date-centered');
         
-        // Add shake class
-        dateDisplay.classList.add('date-shake');
-        
-        // After shake animation completes, wait a second before moving
+        // Update to today's date after sliding in
         setTimeout(() => {
-          // Remove shake class but keep centered
-          dateDisplay.classList.remove('date-shake');
+          // Update to today's date at the same moment shaking starts
+          const today = new Date();
+          dateDisplay.textContent = today.toLocaleDateString('en-US', options);
           
-          // Wait a second before moving to corner
+          // This delay (1000ms = 1 second) controls how long the date stays in the center before shaking
+          // You can increase or decrease this value to change the timing
+          
+          // Add shake class
+          dateDisplay.classList.add('date-shake');
+          
+          // After shake animation completes, wait a second before moving
           setTimeout(() => {
-            // Create a transition for the movement to corner
-            dateDisplay.style.transition = 'all 1s ease';
-            dateDisplay.classList.remove('date-centered');
-            dateDisplay.classList.add('date-corner');
+            // Remove shake class but keep centered
+            dateDisplay.classList.remove('date-shake');
             
-            // Show other elements
-            document.getElementById('kirby-container').style.opacity = '1';
-            document.getElementById('message-container').style.opacity = '1';
-            document.getElementById('checklist-container').style.opacity = '1';
-          }, 1000); // Wait 1 second after shake stops
-        }, 700); // Wait for shake animation to complete
-      }, 1500);
+            // Wait a second before moving to corner
+            setTimeout(() => {
+              // Ensure we keep the element visible during transition
+              dateDisplay.style.opacity = '1';
+              dateDisplay.classList.remove('date-centered');
+              dateDisplay.classList.add('date-corner');
+              
+              // Show other elements
+              document.getElementById('kirby-container').style.opacity = '1';
+              document.getElementById('message-container').style.opacity = '1';
+              document.getElementById('checklist-container').style.opacity = '1';
+            }, 1000); // Wait 1 second after shake stops
+          }, 700); // Wait for shake animation to complete
+        }, 2000); // ← ADJUST THIS VALUE to change how long the date stays centered before updating to today's date and shaking
+      }, 500); // Start sliding in after 500ms
     }
-    
+  
     function forceAudioPlay() {
       const audio = document.getElementById('background-audio');
       
@@ -400,6 +444,25 @@
       }, { once: true });
     }
     
+    // Reset checklist function
+    function resetChecklist() {
+      const checkboxes = document.querySelectorAll('.checklist-checkbox');
+      const morningChecklist = document.getElementById('morning-checklist');
+      const checklistTitle = document.getElementById('checklist-title');
+      const completionMessage = document.getElementById('completion-message');
+      
+      checkboxes.forEach(checkbox => {
+        checkbox.checked = false;
+        checkbox.closest('.checklist-item').classList.remove('completed');
+        localStorage.setItem(checkbox.id, false);
+      });
+      
+      // Reset display
+      morningChecklist.style.display = 'block';
+      checklistTitle.style.display = 'block';
+      completionMessage.style.display = 'none';
+    }
+    
     // Setup checkbox functionality
     function setupCheckboxes() {
       const checkboxes = document.querySelectorAll('.checklist-checkbox');
@@ -407,6 +470,10 @@
       const morningChecklist = document.getElementById('morning-checklist');
       const checklistTitle = document.getElementById('checklist-title');
       const completionMessage = document.getElementById('completion-message');
+      const resetButton = document.getElementById('reset-button');
+      
+      // Add event listener to reset button
+      resetButton.addEventListener('click', resetChecklist);
       
       // Function to check if all tasks are completed
       function checkAllCompleted() {
@@ -462,16 +529,7 @@
       const timeUntilReset = resetCheckTime.getTime() - now.getTime();
       
       setTimeout(() => {
-        checkboxes.forEach(checkbox => {
-          checkbox.checked = false;
-          checkbox.closest('.checklist-item').classList.remove('completed');
-          localStorage.setItem(checkbox.id, false);
-        });
-        
-        // Reset display
-        morningChecklist.style.display = 'block';
-        checklistTitle.style.display = 'block';
-        completionMessage.style.display = 'none';
+        resetChecklist();
         
         // Set the next reset
         setupCheckboxes();
